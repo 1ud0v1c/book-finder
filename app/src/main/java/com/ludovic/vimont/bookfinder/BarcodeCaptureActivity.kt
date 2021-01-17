@@ -2,6 +2,7 @@ package com.ludovic.vimont.bookfinder
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -12,9 +13,13 @@ import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.ludovic.vimont.bookfinder.databinding.ActivityBarcodeCaptureBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.IOException
+
 
 class BarcodeCaptureActivity: AppCompatActivity() {
     private lateinit var barcodeDetector: BarcodeDetector
@@ -26,6 +31,12 @@ class BarcodeCaptureActivity: AppCompatActivity() {
         setContentView(binding.root)
         initBarcodeDetector()
         askPermissions()
+        with(binding) {
+            buttonAddBook.setOnClickListener {
+                setResult(RESULT_OK, Intent().putExtra("isbn", textViewScanResult.text.toString()))
+                finish()
+            }
+        }
     }
 
     private fun initBarcodeDetector() {
@@ -38,21 +49,28 @@ class BarcodeCaptureActivity: AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<out String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
     @AfterPermissionGranted(125)
     private fun askPermissions() {
-        val permissions = arrayOf( Manifest.permission.CAMERA )
+        val permissions = arrayOf(Manifest.permission.CAMERA)
         if (EasyPermissions.hasPermissions(this, *permissions)) {
             setupCamera(barcodeDetector, binding.surfaceViewScanDisplay)
             setupBarcodeDetector(barcodeDetector, binding.textViewScanResult)
         } else {
-            EasyPermissions.requestPermissions(this, "We need your camera to be able to scan and find the book.", 125, Manifest.permission.CAMERA)
+            EasyPermissions.requestPermissions(
+                this,
+                "We need your camera to be able to scan and find the book.",
+                125,
+                Manifest.permission.CAMERA
+            )
         }
     }
 
@@ -71,7 +89,12 @@ class BarcodeCaptureActivity: AppCompatActivity() {
                 }
             }
 
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+            override fun surfaceChanged(
+                holder: SurfaceHolder,
+                format: Int,
+                width: Int,
+                height: Int
+            ) {
 
             }
 
