@@ -13,6 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "GOOGLE_BOOK_API_KEY", findApiKey("GOOGLE_BOOK_API_KEY")
     }
     buildFeatures {
         viewBinding = true
@@ -30,6 +31,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+}
+
+static def findApiKey(String property){
+    Properties properties = new Properties()
+    properties.load(new FileInputStream("api-keys.properties"))
+    return "\"" + properties.getProperty(property) +"\""
 }
 
 dependencies {

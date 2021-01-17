@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             GoogleBooksAPI.baseURL,
             GoogleBooksAPI::class.java
         )
-        val response: Response<GoogleBooksResponse> = googleBooksAPI.get("isbn:$textViewISBN")
+        val response: Response<GoogleBooksResponse> = googleBooksAPI.get("isbn:$textViewISBN", BuildConfig.GOOGLE_BOOK_API_KEY)
         if (response.isSuccessful) {
             response.body()?.let { googleBooksResponse: GoogleBooksResponse ->
                 println(googleBooksResponse.items?.get(0)?.volumeInfo?.title)
